@@ -4,7 +4,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # or master, depending on your default branch
+      - master  # or master, depending on your default branch
 
 jobs:
   build:
