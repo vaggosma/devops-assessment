@@ -1,0 +1,78 @@
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # or master, depending on your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install Dependencies (Frontend)
+      working-directory: ./frontend
+      run: |
+        npm install
+
+    - name: Install Dependencies (Backend)
+      working-directory: ./backend
+      run: |
+        npm install
+
+    - name: Run Tests (Frontend)
+      working-directory: ./frontend
+      run: |
+        npm test
+
+    - name: Run Tests (Backend)
+      working-directory: ./backend
+      run: |
+        npm test
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm run build
+
+    - name: Build Backend
+      working-directory: ./backend
+      run: |
+        npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # only deploy on main branch
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Deploy Backend to Cloud
+      run: |
+        echo "Deploying Backend to Cloud" # Add actual deploy commands here
+
+    - name: Deploy Frontend to Cloud
+      run: |
+        echo "Deploying Frontend to Cloud" # Add actual deploy commands here
+
+  approval:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main' # Approval only if the branch is 'main'
+
+    steps:
+    - name: Wait for Manual Approval
+      run: |
+        echo "Please approve deployment to production."
+        # Add manual approval commands here
